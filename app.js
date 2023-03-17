@@ -100,7 +100,7 @@ io.on("connection", (socket) => {
     watch = true;
   });
 });
-setInterval(logPH, 1000);
+setInterval(logPH, 20000);
 function logPH() {
   if (watch == true) {
     console.log(placedorders);
