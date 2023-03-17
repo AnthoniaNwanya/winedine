@@ -1,33 +1,25 @@
 const express = require("express");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const app = express();
 const http = require("http");
 const { Server } = require("socket.io");
-
+const { mongoDB } = require("./db");
 const server = http.createServer(app);
 const io = new Server(server);
 require('dotenv').config();
-const sessionMiddleware = session({
+mongoDB();
+
+app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
-  cookie: { 
-    secure: true,
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-   },
-});
-if (app.get('env') === 'production'){
-  app.set('trust proxy', 1);
-  session.Cookie.secure = true
-  
-}
-app.use(sessionMiddleware);
+  store: MongoStore.create({
+    mongoUrl: process.env.url,
+    ttl: 60 * 60 * 24 
+  })
+}))
 
-io.use((socket, next) => {
-  sessionMiddleware(socket.request, {}, next);
-
-});
 
 const path = require("path");
 const publicPath = path.join(__dirname, "public");
@@ -60,9 +52,6 @@ class POrder {
 let adminSocket;
 
 io.on("connection", (socket) => {
-  const session = socket.request.session;
-  session.connections++;
-  session.save();
   
   io.emit("connected", (msg) => {
     console.log("user connected");
@@ -94,7 +83,6 @@ io.on("connection", (socket) => {
     const placedorder = new POrder(data.order, data.total);
     
     placedorders.push(placedorder); 
-    // const OrderHistory = placedorders.pop()
     
     socket.emit("placed_order_client", (placedorders));
    
@@ -111,9 +99,18 @@ app.get("/admin", function (req, res) {
   res.sendFile(publicPath + "/admin.html");
 });
 app.get("/", function (req, res) {
+
   res.sendFile(publicPath + "/chatbot.html");
 });
-
+app.get('/logout', (req,res,next) => {
+  req.session.destroy(err => {
+      if(err){
+          console.log(err);
+      } else {
+          res.send('Session is destroyed')
+      }
+  });
+})
 server.listen(8000, () => {
   console.log("listening on 8000");
 });
