@@ -151,9 +151,9 @@ tbody.addEventListener("click", function (e) {
 
     // Event that pushes all placed orders in an array for Order History display
     socket.on("placed_order_client", (placedorders) => {
-      let obj = {};
+     
       placedorders.forEach((element) => {
-        obj = element;
+     
         var modaltable = document.getElementById("modal_table");
         const row = modaltable.insertRow(-1);
         let column1 = row.insertCell(0);
@@ -161,8 +161,8 @@ tbody.addEventListener("click", function (e) {
         let column3 = row.insertCell(2);
         let column4 = row.insertCell(3);
         column1.innerText = new Date();
-        column2.innerText = obj.order;
-        column3.innerText = obj.total;
+        column2.innerText = element.order;
+        column3.innerText = element.total;
         column4.innerText = "processing order";
       });
     });
