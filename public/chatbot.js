@@ -70,7 +70,7 @@ msgerForm.addEventListener("submit", (e) => {
   msgerInput.value = "";
 });
 socket.on("message", (data) => {
-   data =
+  data =
     "Hi there! I see you might be trying to send a message. Unfortunately, this is a 'button-click' conversation. Kindly go back to the top to select a number.";
 
   appendMessage(BOT_NAME, BOT_IMG, "left", data);
@@ -117,14 +117,13 @@ tbody.addEventListener("click", function (e) {
   // Add to Cart Event
   socket.emit("addtocart", totalorder);
   // Event that displays items in cart upon "add to cart"
-  socket.on("addtocart", totalorder)
-    const mytable = document.getElementById("myPopup");
-    const row = mytable.insertRow(-1);
-    let column1 = row.insertCell(0);
-    let column2 = row.insertCell(1);
-    column1.innerText = totalorder.meal;
-    column2.innerText = totalorder.price;
-
+  socket.on("addtocart", totalorder);
+  const mytable = document.getElementById("myPopup");
+  const row = mytable.insertRow(-1);
+  let column1 = row.insertCell(0);
+  let column2 = row.insertCell(1);
+  column1.innerText = totalorder.meal;
+  column2.innerText = totalorder.price;
 
   // Checkout Order
   btn_99.addEventListener("click", function (e) {
@@ -149,7 +148,27 @@ tbody.addEventListener("click", function (e) {
     }
 
     popup.textContent = "";
+
+    // Event that pushes all placed orders in an array for Order History display
+    socket.on("placed_order_client", (placedorders) => {
+      let obj = {};
+      placedorders.forEach((element) => {
+        obj = element;
+        var modaltable = document.getElementById("modal_table");
+        const row = modaltable.insertRow(-1);
+        let column1 = row.insertCell(0);
+        let column2 = row.insertCell(1);
+        let column3 = row.insertCell(2);
+        let column4 = row.insertCell(3);
+        column1.innerText = new Date();
+        column2.innerText = obj.order;
+        column3.innerText = obj.total;
+        column4.innerText = "processing order";
+      });
+    });
   });
+
+
 });
 
 // Show Current Order
@@ -162,7 +181,22 @@ btn_97.addEventListener("click", function (e) {
     }
   };
 });
+  // Order History
+  btn_98.addEventListener("click", function (e) {
+    var modal = document.getElementById("myModal");
+    modal.style.display = "block";
 
+    var span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+      modal.style.display = "none";
+    };
+
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    };
+  });
 // Cancel Order
 btn_0.addEventListener("click", function (e) {
   var popup = document.getElementById("myPopup");
@@ -171,39 +205,4 @@ btn_0.addEventListener("click", function (e) {
   alist.textContent = "Current order has been cancelled.";
   messages.appendChild(alist);
   window.scrollTo(0, document.body.scrollHeight);
-});
-
-// Event that pushes all placed orders in an array for Order History display
-socket.on("placed_order_client", (placedorders) => {
-  let obj = {};
-  placedorders.forEach((element) => {
-    obj = element;
-    var modaltable = document.getElementById("modal_table");
-    const row = modaltable.insertRow(-1);
-    let column1 = row.insertCell(0);
-    let column2 = row.insertCell(1);
-    let column3 = row.insertCell(2);
-    let column4 = row.insertCell(3);
-    column1.innerText = new Date();
-    column2.innerText = obj.order;
-    column3.innerText = obj.total;
-    column4.innerText = "processing order";
-  });
-});
-
-// Order History
-btn_98.addEventListener("click", function (e) {
-  var modal = document.getElementById("myModal");
-  modal.style.display = "block";
-
-  var span = document.getElementsByClassName("close")[0];
-  span.onclick = function () {
-    modal.style.display = "none";
-  };
-
-  window.onclick = function (event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  };
 });
