@@ -17,24 +17,25 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 mongoDB();
-if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(cookieParser())
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 const sessionMiddleware = session({
-    secret: "auyfyuwhje9u8e93yehiu",
-    resave: true,
-    saveUninitialized: true,
-    store: MongoStore.create({
-      mongoUrl: process.env.url,
-      ttl: 60 * 60 * 24,
-    }),
-  })
+  secret: "auyfyuwhje9u8e93yehiu",
+  resave: true,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.url,
+    ttl: 60 * 60 * 24,
+  }),
+});
 
-app.use(sessionMiddleware)
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
-
 
 class Order {
   constructor(meal, price) {
@@ -58,9 +59,10 @@ class POrder {
     this.Status = "pending";
   }
 }
+let watch = false;
 io.use((socket, next) => {
-  sessionMiddleware(socket.request, socket.request.res, next)
-})
+  sessionMiddleware(socket.request, socket.request.res, next);
+});
 io.on("connection", (socket) => {
   let adminSocket;
   io.emit("connected", (msg) => {
@@ -86,19 +88,28 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit("addtocart", order);
     console.log(`${totalorder.meal} has been added to cart`);
-
   });
 
   socket.on("placed_order", (data) => {
     const placedorder = new POrder(data.order, data.total);
     placedorders.push(placedorder);
-    console.log(placedorders)
+
     io.emit("placed_order_client", placedorders);
     io.emit("placed_order_admin", placedorder);
-    console.log(`server side2: ${placedorders}`)
-
+    console.log(`server side2: ${placedorders}`);
+    watch = true;
   });
 });
+setInterval(logPH, 1000);
+function logPH() {
+  if (watch == true) {
+    console.log(placedorders);
+  }
+}
+
+// setInterval(function () {
+//   element.innerHTML += "Hello";
+// }, 1000);
 
 app.use(express.static(__dirname));
 
@@ -109,7 +120,7 @@ app.get("/admin", function (req, res) {
   res.sendFile(publicPath + "/admin.html");
 });
 app.get("/", function (req, res) {
- console.log(req.session.id)
+  console.log(req.session.id);
   res.sendFile(publicPath + "/chatbot.html");
 });
 
