@@ -92,9 +92,11 @@ io.on("connection", (socket) => {
   socket.on("placed_order", (data) => {
     const placedorder = new POrder(data.order, data.total);
     placedorders.push(placedorder);
-
+    console.log(placedorders)
     io.emit("placed_order_client", placedorders);
     io.emit("placed_order_admin", placedorder);
+    console.log(`server side2: ${placedorders}`)
+
   });
 });
 

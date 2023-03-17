@@ -151,7 +151,7 @@ tbody.addEventListener("click", function (e) {
 
     // Event that pushes all placed orders in an array for Order History display
     socket.on("placed_order_client", (placedorders) => {
-     
+      console.log("Client side1", placedorders)
       placedorders.forEach((element) => {
      
         var modaltable = document.getElementById("modal_table");
@@ -165,6 +165,7 @@ tbody.addEventListener("click", function (e) {
         column3.innerText = element.total;
         column4.innerText = "processing order";
       });
+      console.log("Client side2", placedorders )
     });
   });
 
