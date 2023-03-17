@@ -19,7 +19,7 @@ const sessionMiddleware = session({
 });
 if (app.get('env') === 'production'){
   app.set('trust proxy', 1);
-  sessionMiddleware.cookie.secure = true
+  session.Cookie.secure = true
   
 }
 app.use(sessionMiddleware);
