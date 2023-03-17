@@ -104,13 +104,13 @@ io.on("connection", (socket) => {
 
 app.use(express.static(__dirname));
 
-app.get("/", function (req, res) {
+app.get("/home", function (req, res) {
   res.sendFile(publicPath + "/index.html");
 });
 app.get("/admin", function (req, res) {
   res.sendFile(publicPath + "/admin.html");
 });
-app.get("/chatbot", function (req, res) {
+app.get("/", function (req, res) {
   res.sendFile(publicPath + "/chatbot.html");
 });
 
