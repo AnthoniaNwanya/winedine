@@ -1,5 +1,7 @@
 const express = require("express");
 const session = require("express-session");
+require("dotenv").config();
+
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const bodyParser = require("body-parser");
@@ -13,14 +15,14 @@ const { Server } = require("socket.io");
 const cookieParser = require("cookie-parser");
 const server = http.createServer(app);
 const io = new Server(server);
-require("dotenv").config();
-mongoDB();
 
+mongoDB();
+if (process.env.NODE_ENV !== 'production') { require('dotenv').config() }
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET,
+
+const sessionMiddleware = session({
+    secret: "auyfyuwhje9u8e93yehiu",
     resave: true,
     saveUninitialized: true,
     store: MongoStore.create({
@@ -28,8 +30,8 @@ app.use(
       ttl: 60 * 60 * 24,
     }),
   })
-);
 
+app.use(sessionMiddleware)
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -57,7 +59,7 @@ class POrder {
   }
 }
 io.use((socket, next) => {
-  session(socket.request, socket.request.res, next)
+  sessionMiddleware(socket.request, socket.request.res, next)
 })
 io.on("connection", (socket) => {
   let adminSocket;
