@@ -1,30 +1,39 @@
 const express = require("express");
 const session = require("express-session");
-const MongoStore = require('connect-mongo');
-const app = express();
-const http = require("http");
-const { Server } = require("socket.io");
+const MongoStore = require("connect-mongo");
+const passport = require("passport");
+const bodyParser = require("body-parser");
 const { mongoDB } = require("./db");
-const server = http.createServer(app);
-const io = new Server(server);
-require('dotenv').config();
-mongoDB();
-
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: true,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.url,
-    ttl: 60 * 60 * 24 
-  })
-}))
-
-
+const app = express();
 const path = require("path");
 const publicPath = path.join(__dirname, "public");
 
-const orders = [];
+const http = require("http");
+const { Server } = require("socket.io");
+const cookieParser = require("cookie-parser");
+const server = http.createServer(app);
+const io = new Server(server);
+require("dotenv").config();
+mongoDB();
+
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(cookieParser())
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: process.env.url,
+      ttl: 60 * 60 * 24,
+    }),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 class Order {
   constructor(meal, price) {
     this.meal = meal;
@@ -38,7 +47,6 @@ function addHours(date, hours) {
 }
 const date = new Date();
 const newDate = addHours(date, 1);
-
 const placedorders = [];
 class POrder {
   constructor(order, total) {
@@ -48,11 +56,11 @@ class POrder {
     this.Status = "pending";
   }
 }
-
-let adminSocket;
-
+io.use((socket, next) => {
+  session(socket.request, socket.request.res, next)
+})
 io.on("connection", (socket) => {
-  
+  let adminSocket;
   io.emit("connected", (msg) => {
     console.log("user connected");
   });
@@ -76,16 +84,14 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit("addtocart", order);
     console.log(`${totalorder.meal} has been added to cart`);
-    orders.push(order);
+
   });
 
   socket.on("placed_order", (data) => {
     const placedorder = new POrder(data.order, data.total);
-    
-    placedorders.push(placedorder); 
-    
-    socket.emit("placed_order_client", (placedorders));
-   
+    placedorders.push(placedorder);
+
+    socket.emit("placed_order_client", placedorders);
     io.emit("placed_order_admin", placedorder);
   });
 });
@@ -99,18 +105,10 @@ app.get("/admin", function (req, res) {
   res.sendFile(publicPath + "/admin.html");
 });
 app.get("/", function (req, res) {
-
+ console.log(req.session.id)
   res.sendFile(publicPath + "/chatbot.html");
 });
-app.get('/logout', (req,res,next) => {
-  req.session.destroy(err => {
-      if(err){
-          console.log(err);
-      } else {
-          res.send('Session is destroyed')
-      }
-  });
-})
+
 server.listen(8000, () => {
   console.log("listening on 8000");
 });
