@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("message", (data) => {
-    socket.emit("message", data);
+    io.emit("message", data);
   });
 
   socket.on("addtocart", (totalorder) => {
@@ -93,7 +93,7 @@ io.on("connection", (socket) => {
     const placedorder = new POrder(data.order, data.total);
     placedorders.push(placedorder);
 
-    socket.emit("placed_order_client", placedorders);
+    io.emit("placed_order_client", placedorders);
     io.emit("placed_order_admin", placedorder);
   });
 });
