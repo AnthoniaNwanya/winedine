@@ -1,7 +1,7 @@
 # Wine-Dine-Chatbot
 
 
-### ChatBot Requirements
+###  ![#1589F0](https://via.placeholder.com/15/1589F0/000000?text=+) ChatBot Requirements
 
 
 - ChatBot interface would be like a chat interface
@@ -19,6 +19,18 @@
 - When a customer selects “97”, the bot should be able to return current order
 - When a customer selects “0”, the bot should cancel the order if there is.
 
+###  ![#c5f015](https://via.placeholder.com/15/c5f015/000000?text=+) ChatBot Instructions: 
+
+When a customer lands on the page, the first button to pop up is the "Place An Order" button. This was on the assumption that customers using the chatbot are likely trying to place an order. 
+
+
+![#f03c15](https://via.placeholder.com/15/f03c15/000000?text=+) <ins>Most Importantly: 
+
+To see Order History, a customer must have checked out an order. Though flawed, order history has to be updated on click of a current order checkout.
+
+Please note that this is a button-click chatbot. On click of buttons provided, the chatbot responds.
+
+
 ## Built With: 
 - Node.js 
 - Express.js 
@@ -28,7 +40,7 @@
 ## Clone this Repo: 
 
 ```
-git clone https://github.com/AnthoniaNwanya/wine-dine-chatbot.git
+git clone https://github.com/AnthoniaNwanya/winedine.git
 ```
 
 
