@@ -7,19 +7,11 @@ const passport = require("passport");
 const bodyParser = require("body-parser");
 const { mongoDB } = require("./db");
 const app = express();
-app.use(cors());
-app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
-
 const http = require("http");
-const { Server } = require("socket.io");
+
 const cookieParser = require("cookie-parser");
 const server = http.createServer(app);
+const { Server } = require("socket.io");
 const io = new Server(server);
 
 mongoDB();
@@ -28,17 +20,20 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-const whitelist = ["https://winedinechatbot.onrender.com", "http://localhost:8000"]
-// app.use(
-//   cors({
-//     origin: whitelist,
-//     headers: ["Content-Type"],
-//     credentials: true,
-//   })
-// );
-
+const whitelist = [
+  "https://winedinechatbot.onrender.com",
+  "http://localhost:8000",
+];
+app.use(
+  cors({
+    origin: whitelist,
+    headers: ["Content-Type"],
+    credentials: true,
+  })
+);
+app.use(cors());
 const sessionMiddleware = session({
-  secret: "auyfyuwhje9u8e93yehiu",
+  secret: process.env.SESSION_SECRET,
   resave: true,
   saveUninitialized: true,
   store: MongoStore.create({
@@ -73,7 +68,18 @@ class POrder {
     this.Status = "pending";
   }
 }
-let watch = false;
+// const path = require("path");
+// const publicPath = path.join(__dirnacme, "public");
+// app.use(express.static(__dirname));
+
+// app.get("/admin", function (req, res) {
+//   res.sendFile(publicPath + "/admin.html");
+// });
+app.get("/", function (req, res) {
+  console.log(req.session.id);
+  res.sendFile(__dirname + "/chatbot.html");
+});
+
 io.use((socket, next) => {
   sessionMiddleware(socket.request, socket.request.res, next);
 });
@@ -110,31 +116,9 @@ io.on("connection", (socket) => {
 
     io.emit("placed_order_client", placedorders);
     io.emit("placed_order_admin", placedorder);
-    console.log(`server side2: ${placedorders}`);
-    watch = true;
   });
 });
-setInterval(logPH, 20000);
-function logPH() {
-  if (watch == true) {
-    console.log(placedorders);
-  }
-}
 
-const path = require("path");
-const publicPath = path.join(__dirname, "public");
-app.use(express.static(__dirname));
-
-app.get("/home", function (req, res) {
-  res.sendFile(publicPath + "/index.html");
-});
-app.get("/admin", function (req, res) {
-  res.sendFile(publicPath + "/admin.html");
-});
-app.get("/", function (req, res) {
-  console.log(req.session.id);
-  res.sendFile(publicPath + "/chatbot.html");
-});
 
 server.listen(8000, () => {
   console.log("listening on 8000");
