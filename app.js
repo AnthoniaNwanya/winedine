@@ -46,23 +46,22 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
-class Order {
+class Cart {
   constructor(meal, price) {
     this.meal = meal;
     this.price = price;
   }
 }
 
-function addHours(date, hours) {
-  date.setHours(date.getHours() + hours);
-  return date;
-}
-const date = new Date();
-const newDate = addHours(date, 1);
 const placedorders = [];
+var today = new Date();
+var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
+var time = today.getHours() + ":" + today.getMinutes();
+var dateTime = date+' '+time;
+console.log(dateTime)
 class POrder {
   constructor(order, total) {
-    this.date = new Date(newDate);
+    this.date = dateTime;
     this.order = order;
     this.total = total;
     this.Status = "pending";
@@ -72,9 +71,6 @@ class POrder {
 app.get("/", function (req, res) {
   console.log(req.session.id);
   res.sendFile(__dirname + "/chatbot.html");
-});
-app.get("/homepage", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
 });
 
 app.get("/admin", function (req, res) {
@@ -103,11 +99,11 @@ io.on("connection", (socket) => {
     io.emit("message", data);
   });
 
-  socket.on("addtocart", (totalorder) => {
-    const order = new Order(totalorder.meal, totalorder.price);
+  socket.on("addtocart", (carttotal) => {
+    const order = new Cart(carttotal.meal, carttotal.price);
 
     socket.broadcast.emit("addtocart", order);
-    console.log(`${totalorder.meal} has been added to cart`);
+    console.log(`${carttotal.meal} has been added to cart`);
   });
 
   socket.on("placed_order", (data) => {
