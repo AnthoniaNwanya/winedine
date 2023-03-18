@@ -68,18 +68,18 @@ class POrder {
     this.Status = "pending";
   }
 }
-// const path = require("path");
-// const publicPath = path.join(__dirnacme, "public");
-// app.use(express.static(__dirname));
 
-// app.get("/admin", function (req, res) {
-//   res.sendFile(publicPath + "/admin.html");
-// });
 app.get("/", function (req, res) {
   console.log(req.session.id);
   res.sendFile(__dirname + "/chatbot.html");
 });
+app.get("/homepage", function (req, res) {
+  res.sendFile(__dirname + "/index.html");
+});
 
+app.get("/admin", function (req, res) {
+  res.sendFile(__dirname + "/admin.html");
+});
 io.use((socket, next) => {
   sessionMiddleware(socket.request, socket.request.res, next);
 });
