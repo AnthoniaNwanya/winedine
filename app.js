@@ -7,8 +7,14 @@ const passport = require("passport");
 const bodyParser = require("body-parser");
 const { mongoDB } = require("./db");
 const app = express();
-const path = require("path");
-const publicPath = path.join(__dirname, "public");
+app.use(cors());
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 const http = require("http");
 const { Server } = require("socket.io");
@@ -30,7 +36,7 @@ const whitelist = ["https://winedinechatbot.onrender.com", "http://localhost:800
 //     credentials: true,
 //   })
 // );
-app.use(cors());
+
 const sessionMiddleware = session({
   secret: "auyfyuwhje9u8e93yehiu",
   resave: true,
@@ -115,7 +121,8 @@ function logPH() {
   }
 }
 
-
+const path = require("path");
+const publicPath = path.join(__dirname, "public");
 app.use(express.static(__dirname));
 
 app.get("/home", function (req, res) {
