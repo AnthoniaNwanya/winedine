@@ -23,14 +23,14 @@ if (process.env.NODE_ENV !== "production") {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 const whitelist = ["https://winedinechatbot.onrender.com", "http://localhost:8000"]
-app.use(
-  cors({
-    origin: whitelist,
-    headers: ["Content-Type"],
-    credentials: true,
-  })
-);
-app.options("*", cors());
+// app.use(
+//   cors({
+//     origin: whitelist,
+//     headers: ["Content-Type"],
+//     credentials: true,
+//   })
+// );
+app.use(cors());
 const sessionMiddleware = session({
   secret: "auyfyuwhje9u8e93yehiu",
   resave: true,
