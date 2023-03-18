@@ -1,5 +1,6 @@
 // Icons made by Freepik from www.flaticon.com
-const socket = io("http://localhost:8000");
+
+const socket = io.connect("http://localhost:8000");
 const messages = document.getElementById("messages");
 const msgerForm = get(".msger-inputarea");
 const msgerInput = get(".msger-input");

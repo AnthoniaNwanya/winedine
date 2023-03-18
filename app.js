@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-const whitelist = ["https://winedinechatbot.onrender.com", "http://127.0.0.1:5500"]
+const whitelist = ["https://winedinechatbot.onrender.com", "http://localhost:8000"]
 app.use(
   cors({
     origin: whitelist,
@@ -115,9 +115,6 @@ function logPH() {
   }
 }
 
-// setInterval(function () {
-//   element.innerHTML += "Hello";
-// }, 1000);
 
 app.use(express.static(__dirname));
 
