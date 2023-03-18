@@ -1,7 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 require("dotenv").config();
-const cors = require("cors")
+const cors = require("cors");
 const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const bodyParser = require("body-parser");
@@ -24,12 +24,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(
   cors({
-  "origin": "*",
-  "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-  "preflightContinue": false,
-  "optionsSuccessStatus": 204
-})
-)
+    origin: "https://winedinechatbot.onrender.com",
+    headers: ["Content-Type"],
+    credentials: true,
+  })
+);
+app.options("*", cors());
 const sessionMiddleware = session({
   secret: "auyfyuwhje9u8e93yehiu",
   resave: true,
