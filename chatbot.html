@@ -689,7 +689,7 @@
 
       // Add to Cart Event
       socket.emit("addtocart", carttotal);
-      
+
       // Event that displays items in cart upon "add to cart"
       socket.on("addtocart", carttotal);
       const mytable = document.getElementById("myPopup");
@@ -699,29 +699,30 @@
       column1.innerText = carttotal.meal;
       column2.innerText = carttotal.price;
 
-      // Checkout Order
-      btn_99.addEventListener("click", function (e) {
-        var popup = document.getElementById("myPopup");
 
-        var notifyorder = document.getElementById("notifyorder");
-        notifyorder.style.display = "block";
-        const notifymsg = document.getElementById("notifymsg");
-        let myorder = popup.textContent.trim().toString();
+    });
 
-        // Calculate Order Total for each addition to cart
-        let sumVal = 0;
-        for (let i = 0; i < popup.rows.length; i++) {
-          sumVal = sumVal + parseInt(popup.rows[i].cells[1].innerHTML);
-          notifymsg.innerText = `Order placed. Total: ${sumVal}`;
-          const data = {
-            order: myorder,
-            total: sumVal,
-          };
-          socket.emit("placed_order", data);
-        }
-        popup.textContent = "";
-      });
+    // Checkout Order
+    btn_99.addEventListener("click", function (e) {
+      var popup = document.getElementById("myPopup");
 
+      var notifyorder = document.getElementById("notifyorder");
+      notifyorder.style.display = "block";
+      const notifymsg = document.getElementById("notifymsg");
+      let myorder = popup.textContent.trim().toString();
+
+      // Calculate Order Total for each addition to cart
+      let sumVal = 0;
+      for (let i = 0; i < popup.rows.length; i++) {
+        sumVal = sumVal + parseInt(popup.rows[i].cells[1].innerHTML);
+        notifymsg.innerText = `Order placed. Total: ${sumVal}`;
+        const data = {
+          order: myorder,
+          total: sumVal,
+        };
+        socket.emit("placed_order", data);
+      }
+      popup.textContent = "";
     });
 
     // Show Current Order
@@ -734,7 +735,6 @@
         }
       };
     });
-
 
     // Event that pushes all placed orders in an array for Order History display
     socket.on("placed_order_client", (placedorders) => {
